@@ -8,29 +8,44 @@ on:
 jobs:
   dotnet_publish:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ✅ Explicit NuGet cache (fixes "deprecated cache version" warning)
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      # ✅ Setup .NET SDK 9.0.100
       - name: Setup .NET 9.0.100
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.100'
 
-      - name: Install dependencies
+      # ✅ Restore dependencies
+      - name: Restore dependencies
         run: dotnet restore
 
+      # ✅ SonarCloud scan (correct version + syntax)
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v4
+        uses: sonarsource/sonarcloud-github-action@v6
         with:
-          organization: subhashreesai             # Replace with your SonarCloud organization key
-          projectKey: subhashree-dotnet_mydotnetapp            # Replace with your SonarCloud project key
-          token: ${{ secrets.SONAR_TOKEN }}       # Required
+          organization: subhashreesai
+          projectKey: subhashree-dotnet_mydotnetapp
+          token: ${{ secrets.SONAR_TOKEN }}
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
+      # ✅ Build your project
       - name: Build project
-        run: dotnet build src/Presentation/Nop.Web/Nop.Web.csproj --configuration Release
+        run: dotnet build src/Presentation/Nop.Web/Nop.Web.csproj --configuration Release --no-restore
 
+      # ✅ Publish your project
       - name: Publish .NET project
-        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o demo
+        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o demo --no-restore
