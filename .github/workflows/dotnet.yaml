@@ -1,0 +1,21 @@
+name: mydotnet project
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  dotnet_publish:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # or your required version
+
+      - name: Publish .NET project
+        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o /demo
