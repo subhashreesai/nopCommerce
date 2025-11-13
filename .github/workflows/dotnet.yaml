@@ -7,15 +7,21 @@ on:
 
 jobs:
   dotnet_publish:
-    runs-on: self-hosted
+    runs-on: 'ubuntu-latest'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v6
+        with: 
+          mysonar: ${{ secrets.SONAR_TOKEN }}   
+          mysonar_url: ${{ secrets.SONAR_HOST_URL }}
+      - name: install dotnet
         with:
-          dotnet-version: '8.0.x' # or your required version
+          dotnet-version: '9.0.100' # or your required version
 
       - name: Publish .NET project
         run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o demo
