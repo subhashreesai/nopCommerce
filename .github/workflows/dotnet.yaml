@@ -7,21 +7,30 @@ on:
 
 jobs:
   dotnet_publish:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET 9.0.100
         uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.100'
+
+      - name: Install dependencies
+        run: dotnet restore
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@v6
-        with: 
-          mysonar: ${{ secrets.SONAR_TOKEN }}   
-          mysonar_url: ${{ secrets.SONAR_HOST_URL }}
-      - name: install dotnet
         with:
-          dotnet-version: '9.0.100' # or your required version
+          organization: subhashreesai             # Replace with your SonarCloud organization key
+          projectKey: subhashree-dotnet_mydotnetapp            # Replace with your SonarCloud project key
+          token: ${{ secrets.SONAR_TOKEN }}       # Required
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Build project
+        run: dotnet build src/Presentation/Nop.Web/Nop.Web.csproj --configuration Release
 
       - name: Publish .NET project
         run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o demo
