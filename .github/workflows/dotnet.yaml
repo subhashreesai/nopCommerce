@@ -18,4 +18,4 @@ jobs:
           dotnet-version: '8.0.x' # or your required version
 
       - name: Publish .NET project
-        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o /demo
+        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o demo
