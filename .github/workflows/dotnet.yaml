@@ -12,14 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET SDK locally
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
-          install-dir: ${{ runner.temp }}/dotnet
-
-      - name: Add .NET to PATH
-        run: echo "${{ runner.temp }}/dotnet" >> $GITHUB_PATH
+          dotnet-version: '8.0.x' # or your required version
 
       - name: Publish .NET project
-        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o /demo
+        run: dotnet publish src/Presentation/Nop.Web/Nop.Web.csproj -c Release -o demo
